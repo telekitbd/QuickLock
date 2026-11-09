@@ -29,13 +29,14 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Set up Android SDK and accept licenses
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-          packages: |
-            platforms;android-35
-            build-tools;35.0.0
+
+      - name: Install Android SDK components
+        run: |
+          set +o pipefail
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Verify project files
         run: |

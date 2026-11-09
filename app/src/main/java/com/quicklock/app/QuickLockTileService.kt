@@ -3,7 +3,9 @@ package com.quicklock.app
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
+import android.app.PendingIntent
 import android.content.Intent
+import android.os.Build
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
@@ -30,7 +32,17 @@ class QuickLockTileService : TileService() {
         } else {
             val launch = packageManager.getLaunchIntentForPackage(packageName)
             launch?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (launch != null) startActivityAndCollapse(launch)
+            if (launch != null) {
+                if (Build.VERSION.SDK_INT >= 34) {
+                    val pi = PendingIntent.getActivity(
+                        this, 0, launch, PendingIntent.FLAG_IMMUTABLE
+                    )
+                    startActivityAndCollapse(pi)
+                } else {
+                    @Suppress("DEPRECATION")
+                    startActivityAndCollapse(launch)
+                }
+            }
         }
     }
 
