@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Quick Lock</string>
+    <string name="admin_description">Allows Quick Lock to turn off the screen and lock your phone when you tap the lock button.</string>
+</resources>
