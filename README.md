@@ -21,7 +21,7 @@ The repository root must contain these items:
 3. Open the extracted folder. Select all its contents, including the hidden `.github` folder, and upload them to the repository root.
 4. Commit the files to the `main` branch.
 5. Open the repository's **Actions** tab.
-6. Select **Build Quick Lock APK** and click **Run workflow** if it has not started automatically.
+6. Select **Build Quick Lock APK** and click **Run workflow** if it has not started automatically. The workflow now accepts Android SDK licenses through the setup action.
 7. Open the completed run and download the `QuickLock-debug-apk` artifact.
 8. Extract the artifact ZIP and install `app-debug.apk` on your Android phone.
 
