@@ -226,27 +226,28 @@ class MainActivity : Activity() {
     }
 
     private fun stepRow(badge: TextView, title: String, desc: String, vararg extras: View): LinearLayout {
-        val row = LinearLayout(this).apply {
+        val col = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, dp(18), 0, dp(18))
+        }
+        // badge + title on one centered line
+        val head = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(0, dp(16), 0, dp(16))
+            gravity = Gravity.CENTER_VERTICAL
         }
-        row.addView(badge, LinearLayout.LayoutParams(dp(30), dp(30)).apply {
-            rightMargin = dp(14)
-            topMargin = dp(1)
-        })
-        val col = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        col.addView(label(title, 16f, textMain, true))
-        col.addView(label(desc, 13f, muted).apply {
-            setPadding(0, dp(4), 0, 0)
-            setLineSpacing(0f, 1.15f)
-        })
+        head.addView(badge, LinearLayout.LayoutParams(dp(28), dp(28)).apply { rightMargin = dp(12) })
+        head.addView(label(title, 17f, textMain, true))
+        col.addView(head, matchWrap())
+
+        // everything below starts at the same left edge as the badge
+        col.addView(label(desc, 13.5f, muted).apply { setLineSpacing(0f, 1.15f) },
+            matchWrap().apply { topMargin = dp(10) })
         for (v in extras) {
-            val h = if (v is Button) dp(46) else LinearLayout.LayoutParams.WRAP_CONTENT
+            val h = if (v is Button) dp(48) else LinearLayout.LayoutParams.WRAP_CONTENT
             col.addView(v, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, h).apply { topMargin = dp(12) })
+                LinearLayout.LayoutParams.MATCH_PARENT, h).apply { topMargin = dp(14) })
         }
-        row.addView(col, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        return row
+        return col
     }
 
     // --------------------------------------------------------------- state
@@ -366,7 +367,10 @@ class MainActivity : Activity() {
         setOnClickListener { onClick() }
     }
 
-    private fun makeBadge() = label("", 14f, textMain, true).apply { gravity = Gravity.CENTER }
+    private fun makeBadge() = label("", 14f, textMain, true).apply {
+        gravity = Gravity.CENTER
+        includeFontPadding = false
+    }
 
     private fun setBadge(b: TextView, number: String, done: Boolean) {
         b.text = if (done) "✓" else number
