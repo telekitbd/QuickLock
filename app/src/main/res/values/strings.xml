@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Quick Lock</string>
-    <string name="admin_description">Allows Quick Lock to turn off the screen and lock your phone when you tap the lock button.</string>
+    <string name="tile_label">Quick Lock</string>
+    <string name="shortcut_short">Lock now</string>
+    <string name="shortcut_long">Lock screen now</string>
+    <string name="a11y_description">Quick Lock uses this only to trigger Android\'s normal lock-screen action, the same as pressing the power button. It does not read, record or send anything on your screen.</string>
 </resources>

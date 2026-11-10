@@ -1,24 +1,13 @@
 package com.quicklock.app
 
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
-import android.content.Context
 import android.app.PendingIntent
 import android.content.Intent
-import android.os.Build
 import android.graphics.drawable.Icon
+import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
 class QuickLockTileService : TileService() {
-    private lateinit var dpm: DevicePolicyManager
-    private lateinit var adminComponent: ComponentName
-
-    override fun onCreate() {
-        super.onCreate()
-        dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        adminComponent = ComponentName(this, QuickLockAdminReceiver::class.java)
-    }
 
     override fun onStartListening() {
         super.onStartListening()
@@ -27,31 +16,26 @@ class QuickLockTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        if (dpm.isAdminActive(adminComponent)) {
-            dpm.lockNow()
+        if (!QuickLock.lock()) openApp()
+    }
+
+    private fun openApp() {
+        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (Build.VERSION.SDK_INT >= 34) {
+            val pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            startActivityAndCollapse(pi)
         } else {
-            val launch = packageManager.getLaunchIntentForPackage(packageName)
-            launch?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (launch != null) {
-                if (Build.VERSION.SDK_INT >= 34) {
-                    val pi = PendingIntent.getActivity(
-                        this, 0, launch, PendingIntent.FLAG_IMMUTABLE
-                    )
-                    startActivityAndCollapse(pi)
-                } else {
-                    @Suppress("DEPRECATION")
-                    startActivityAndCollapse(launch)
-                }
-            }
+            @Suppress("DEPRECATION")
+            startActivityAndCollapse(intent)
         }
     }
 
     private fun updateTile() {
         val tile = qsTile ?: return
-        tile.label = "Quick Lock"
+        tile.label = getString(R.string.tile_label)
         tile.contentDescription = "Tap to lock your phone screen"
         tile.icon = Icon.createWithResource(this, R.drawable.ic_quick_lock)
-        tile.state = if (dpm.isAdminActive(adminComponent)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+        tile.state = if (QuickLock.isServiceEnabled(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         tile.updateTile()
     }
 }

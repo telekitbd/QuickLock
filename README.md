@@ -1,37 +1,23 @@
-# Quick Lock
+# Quick Lock 2.0
 
-A lightweight Android app with a one-tap screen lock and an Android Quick Settings tile.
+One-tap screen lock with a Quick Settings tile. **Fingerprint and face unlock keep working.**
 
-## IMPORTANT: Upload files to the repository root
+## Why v2?
+v1 used Device Admin `lockNow()`. Android treats that as a "strict" lock and forces PIN/pattern for the next
+unlock, so fingerprint/face were disabled. v2 uses an Accessibility Service with Android's own
+`GLOBAL_ACTION_LOCK_SCREEN`, which is identical to pressing the power button.
 
-When extracting this ZIP, open the extracted folder and upload its **contents** directly into the root of your GitHub repository.
-Do not upload the outer `QuickLock` folder as a subfolder.
-
-The repository root must contain these items:
-- `.github/workflows/build-apk.yml`
-- `settings.gradle.kts`
-- `build.gradle.kts`
-- `gradle.properties`
-- `app/`
+The service never reads your screen (no events, no window content access). No internet permission, no ads.
 
 ## Build the APK with GitHub Actions
-
-1. Create a GitHub repository named `QuickLock`.
-2. Extract this ZIP on your computer.
-3. Open the extracted folder. Select all its contents, including the hidden `.github` folder, and upload them to the repository root.
-4. Commit the files to the `main` branch.
-5. Open the repository's **Actions** tab.
-6. Select **Build Quick Lock APK** and click **Run workflow** if it has not started automatically.
-7. Open the completed run and download the `QuickLock-debug-apk` artifact.
-8. Extract the artifact ZIP and install `app-debug.apk` on your Android phone.
+Upload the **contents** of this folder (including hidden `.github`) to the root of your repo, then run
+**Build Quick Lock APK** in the Actions tab and download `QuickLock-debug-apk`.
 
 ## First use
+1. Uninstall v1 first (deactivate it under Settings > Security > Device admin apps), then install v2.
+2. Open Quick Lock > **Open Accessibility settings** > Quick Lock > turn on.
+   - Switch greyed out (Android 13+ sideloaded apps)? Settings > Apps > Quick Lock > ⋮ > **Allow restricted settings**, then try again.
+3. Tap **Add to Quick Settings** (Android 13+), or add the tile manually via the pencil/Edit icon.
+4. Lock from the big button, the tile, or by long-pressing the app icon > **Lock now**.
 
-1. Open Quick Lock.
-2. Tap **Enable Device Admin** and approve the Android system prompt.
-3. For app-free access, swipe down twice to open Android Quick Settings, tap Edit/Pencil, find **Quick Lock**, and drag it into the active tiles.
-4. Tap the Quick Lock tile whenever you want to lock the phone.
-
-Android requires Device Admin permission for the screen-lock action. To uninstall the app later, first deactivate Quick Lock under Android Settings > Security > Device admin apps.
-
-The app requests no internet permission and includes no ads or analytics.
+Requires Android 9 (API 28) or newer.
