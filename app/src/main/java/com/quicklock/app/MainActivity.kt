@@ -19,6 +19,7 @@ import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowInsets
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -203,7 +204,25 @@ class MainActivity : Activity() {
             setBackgroundColor(bg)
             isFillViewport = true
             addView(root)
+            // Android 15 draws apps edge-to-edge: keep content clear of status/navigation bars.
+            setOnApplyWindowInsetsListener { v, insets -> applyInsets(v, insets) }
         }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun applyInsets(v: View, insets: WindowInsets): WindowInsets {
+        val top: Int
+        val bottom: Int
+        if (Build.VERSION.SDK_INT >= 30) {
+            val b = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
+            top = b.top
+            bottom = b.bottom
+        } else {
+            top = insets.systemWindowInsetTop
+            bottom = insets.systemWindowInsetBottom
+        }
+        v.setPadding(0, top, 0, bottom)
+        return insets
     }
 
     private fun stepRow(badge: TextView, title: String, desc: String, vararg extras: View): LinearLayout {
@@ -244,6 +263,9 @@ class MainActivity : Activity() {
             GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(accent2, accent))
                 .apply { shape = GradientDrawable.OVAL }
         else oval(surface2)
+
+        glow.visibility = if (ready) View.VISIBLE else View.INVISIBLE
+        lockButton.getChildAt(0).alpha = if (ready) 1f else 0.45f
 
         heroTitle.text = if (ready) "Tap to lock" else "Almost there"
         heroSub.text = if (ready)
